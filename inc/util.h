@@ -17,6 +17,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <cstddef>
 #include <cstdint>
 
 constexpr unsigned lg2(uint64_t n) { return n < 2 ? 0 : 1 + lg2(n / 2); }
