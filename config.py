@@ -186,7 +186,12 @@ for cache in caches.values():
 # Create prefetch activation masks
 type_list = ('LOAD', 'RFO', 'PREFETCH', 'WRITEBACK', 'TRANSLATION')
 for cache in caches.values():
-    cache['prefetch_activate_mask'] = functools.reduce(operator.or_, (1 << i for i,t in enumerate(type_list) if t in cache['prefetch_activate'].split(',')))
+    if cache['prefetch_activate'] == '':
+        cache['prefetch_activate_mask'] = 0
+    else:
+        cache['prefetch_activate_mask'] = functools.reduce(operator.or_,
+                                                           (1 << i for i, t in enumerate(type_list)
+                                                            if t in cache['prefetch_activate'].split(',')))
 
 # Scale frequencies
 config_file['physical_memory']['io_freq'] = config_file['physical_memory']['frequency'] # Save value
