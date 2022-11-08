@@ -541,12 +541,21 @@ void O3_CPU::do_scheduling(champsim::circular_buffer<ooo_model_instr>::iterator 
   // Mark register dependencies
   for (auto src_reg : rob_it->source_registers) {
     if (src_reg) {
+
       champsim::circular_buffer<ooo_model_instr>::reverse_iterator prior{rob_it};
+
       prior = std::find_if(prior, ROB.rend(), instr_reg_will_produce(src_reg));
+
+
+#if 0
+      // This block does not compile with C++20, figure out why
       if (prior != ROB.rend() && (prior->registers_instrs_depend_on_me.empty() || prior->registers_instrs_depend_on_me.back() != rob_it)) {
         prior->registers_instrs_depend_on_me.push_back(rob_it);
         rob_it->num_reg_dependent++;
       }
+#endif
+
+
     }
   }
 
@@ -722,6 +731,9 @@ void O3_CPU::add_load_queue(champsim::circular_buffer<ooo_model_instr>::iterator
   // queue yet
   champsim::circular_buffer<ooo_model_instr>::reverse_iterator prior_it{rob_it};
   prior_it = std::find_if(prior_it, ROB.rend(), instr_mem_will_produce(lq_it->virtual_address));
+
+// This block does not compile with C++20
+#if 0
   if (prior_it != ROB.rend()) {
     // this load cannot be executed until the prior store gets executed
     prior_it->memory_instrs_depend_on_me.push_back(rob_it);
@@ -736,6 +748,8 @@ void O3_CPU::add_load_queue(champsim::circular_buffer<ooo_model_instr>::iterator
     // If this entry is not waiting on RAW
     RTL0.push(lq_it);
   }
+#endif
+
 }
 
 void O3_CPU::add_store_queue(champsim::circular_buffer<ooo_model_instr>::iterator rob_it, uint32_t data_index)
